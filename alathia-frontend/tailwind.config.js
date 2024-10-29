@@ -23,7 +23,8 @@ export default {
         green10: '#27AE60',
         green15: "#107C10",
         
-        yellow: "#7A6958",
+        yellow20: "#7A6958",
+        yellow10: "#dca54c",
         
         gold10: '#F4D03F',
         gold20: '#D35400',
