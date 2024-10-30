@@ -1,10 +1,21 @@
-
+import Navbar from "./components/Navbar";
+import HeroScrollDemo  from "./components/HeroComponent";
+import Sparkles2 from '../../components/Sparkles2';
+import CTAButton from "./components/CTAButton";
+import { FeaturesSectionDemo } from "./components/Features";
+import Roadmap from "./components/TimelineComponent";
 
 const index = () => {
-
     return (
-        <div className='flex w-[100vw] h-[100vh] bg-black20 text-yellow10 p-[2rem] text-[2rem] font-bold'>
-            Main
+        <div className='relative bg-black20 overflow-x-hidden'>
+            <Sparkles2 />
+            <div className='flex flex-col gap-[3rem] w-[100vw] text-yellow10 p-[2rem] pt-[7rem] text-[2rem] font-bold'>
+                <Navbar />
+                <HeroScrollDemo />
+                <CTAButton />
+                <Roadmap />
+                <FeaturesSectionDemo />
+            </div>
         </div>
     )
 }

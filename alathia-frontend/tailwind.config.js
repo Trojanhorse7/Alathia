@@ -10,6 +10,10 @@ export default {
   theme: {
     extend: {
       colors: {
+        siteblack: '#131519',
+        siteDimBlack: '#191d23',
+        siteViolet: '#7f46f0',
+        siteWhite: '#9eacc7',
 
         blue10: "#106EBE",
         blue20: '#2C3E50',
@@ -40,10 +44,18 @@ export default {
         'Carvist': ['Carvist', 'sans-serif'],
       },
       screens: {
-        md2: '900px'
+        md2: '1000px'
       },
       boxShadow: {
         'custom-green': '0px 10px 15px -3px #2A6F4A1F',
+      },
+      backgroundImage: {
+        astral: "url('/src/assets/background/astral.jpg')",
+        saiman: "url('/src/assets/background/saiman.jpg')",
+        eoaalien: "url('/src/assets/background/eoaalien.jpg')",
+        panight: "url('/src/assets/background/panight.jpg')",
+        heroImg: "url('/src/assets/background/hero-img.jpg')",
+        landing: "url('/src/assets/background/landing.jpg')",
       },
       keyframes: {
         wiggle: {
@@ -78,6 +90,6 @@ export default {
       },
     },
   },
-  plugins: [nextui()],
+  plugins: [nextui(), require("tailwind-scrollbar")],
 };
 
