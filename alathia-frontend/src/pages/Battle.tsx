@@ -4,7 +4,8 @@ import { ActionButton, Card, GameInfo, PlayerInfo } from '../components/index.js
 import { attack, attackSound, defense, defenseSound, player01 as player01Icon, player02 as player02Icon } from '../assets/index.js';
 import { playAudio } from 'src/utils/animation.js';
 import { toast } from 'sonner';
-import Navbar from 'src/pages/Home/components/Navbar';
+import { Tooltip } from 'react-tooltip';
+// import Navbar from 'src/pages/Home/components/Navbar';
 
 //Blockchain
 import { useContractWrite, usePrepareContractWrite, useAccount, useContractReads } from 'wagmi'
@@ -13,6 +14,7 @@ import { useGlobalContext } from '../store';
 
 const Battle: React.FC = () => {
   const {gameData, battleGround, player1Ref, player2Ref } = useGlobalContext();
+  console.log(gameData)
   const { address, isConnected } = useAccount();
   const [player2, setPlayer2] = useState<any>();
   const [player1, setPlayer1] = useState<any>();
@@ -49,7 +51,6 @@ const Battle: React.FC = () => {
         const player01 = data[0].result as any;
         const player02 = data[1].result as any;
         const p1TokenData = data[2].result as any;
-        console.log(typeof p1TokenData.attackStrength);
         const p1Att = Number(p1TokenData.attackStrength); 
         const p1Def = Number(p1TokenData.defenseStrength); 
         const p1H = Number(player01.playerHealth); 
@@ -61,7 +62,7 @@ const Battle: React.FC = () => {
         setPlayer2({ ...player02, att: 'X', def: 'X', health: p2H, mana: p2M });
       }
     } catch (error: any) {
-      console.log(error)
+      // console.log(error)
       toast.error(error.message);
     }
   };
@@ -95,25 +96,20 @@ const Battle: React.FC = () => {
   )
   
   // Write hook for initiating move
-  const { config: attackDefendConfig } = usePrepareContractWrite({
+  const { config: attackDefendConfig, isSuccess } = usePrepareContractWrite({
     address: contractAddress,
     abi,
     functionName: 'attackOrDefendChoice',
-    enabled: choice !== undefined,
     args: [choice, battleName],
   });
 
-  const { write, error, isLoading: writeLoading, isSuccess: writeSuccess } = useContractWrite(attackDefendConfig)
+  const { write, error } = useContractWrite(attackDefendConfig)
 
-  const { write: makeAMove } = useContractWrite({
-    ...attackDefendConfig,
-    onSuccess() {
-      toast.info(`Initiating ${choice === 1 ? 'attack' : 'defense'}`);
-    },
-    onError(error: any) {
-      toast.error(error?.message);
-    },
-  });
+  useEffect(() => {
+    if (gameData.activeBattle) {
+      getPlayerInfo();
+    }
+  }, [gameData.activeBattle, isSuccess]);
 
   useEffect(() => {
     if (error) {
@@ -132,7 +128,7 @@ const Battle: React.FC = () => {
       if (isConnected) {
         setChoice(choiceNumber);
         playAudio(choiceNumber === 1 ? attackSound : defenseSound);
-        makeAMove?.();
+        write?.();
       } else {
         toast.error("Account Not Connected.")
       }
@@ -142,8 +138,7 @@ const Battle: React.FC = () => {
   };
 
   return (
-    <div className='min-h-screen flex flex-col gap-[3rem] w-[100vw] text-yellow10 text-[2rem] font-bold bg-siteblack pb-[2rem] pt-[7rem]'>
-      <Navbar />
+    <div className='min-h-screen flex flex-col gap-[3rem] w-[100vw] text-yellow10 text-[2rem] font-bold bg-siteblack '>
       <div className={`flex justify-between items-center w-screen min-h-screen bg-cover bg-no-repeat bg-center flex-col ${battleGround}`}>
         {
           (player1 && player2)  && (
@@ -152,9 +147,11 @@ const Battle: React.FC = () => {
                 <div className={`flex items-center justify-center my-10 flex-col`}>
                   <Card card={player2} title={player2?.playerName || 'Player 2'} cardRef={player2Ref} playerTwo />
                   <div className='flex flex-row items-center'>
-                    <ActionButton imgUrl={attack} handleClick={() => handleMove(1)} restStyles='mr-2 hover:border-yellow-400' />
+                    <ActionButton imgUrl={attack} data-tooltip-id={`Attack`} data-tooltip-content={`Attack`} handleClick={() => handleMove(1)} restStyles='mr-2 hover:border-yellow-400' />
                     <Card card={player1} title={player1?.playerName || 'Player 1'} cardRef={player1Ref} restStyles='mt-3' />
-                    <ActionButton imgUrl={defense} handleClick={() => handleMove(2)} restStyles='ml-6 hover:border-red-600' />
+                    <ActionButton imgUrl={defense} data-tooltip-id={`Defense`} data-tooltip-content={`Defense`} handleClick={() => handleMove(2)} restStyles='ml-6 hover:border-red-600' />
+                    <Tooltip id={`Attack`} float />
+                    <Tooltip id={`Defense`} float />
                   </div>
                 </div>
               <PlayerInfo player={player1} playerIcon={player01Icon} />

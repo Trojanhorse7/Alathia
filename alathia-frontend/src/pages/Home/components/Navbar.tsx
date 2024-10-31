@@ -78,7 +78,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className={`w-full h-fit shrink-0 fixed top-3 left-0 bg-slate-700/50 py-[5px] z-[999]`}>
+    <nav className={`w-full h-fit shrink-0 top-3 left-0 bg-slate-700/50 py-[5px] z-[999]`}>
       <div className="flex flex-row items-center justify-between w-[85vw] mx-auto gap-[1rem]">
         
         <Link to="/" className="flex w-[70px]">

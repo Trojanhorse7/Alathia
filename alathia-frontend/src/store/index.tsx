@@ -167,7 +167,7 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
     };
 
     fetchGameData();
-  }, [allBattles, updateGameData]);
+  }, [allBattles, updateGameData, address]);
 
   return (
     <GlobalContext.Provider

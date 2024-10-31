@@ -66,7 +66,7 @@ const GameInfo = () => {
         </div>
       </div>
 
-      <div className={`absolute p-6 right-0 top-0 h-screen rounded-md flex-col transition-all ease-in duration-300 ${toggleSidebar ? 'translate-x-0' : 'translate-x-full'} bg-white backdrop-filter backdrop-blur-lg bg-opacity-10 flex justify-between items-center `}>
+      <div className={`absolute p-6 right-0 top-0 h-screen rounded-md flex-col transition-all ease-in duration-300 ${toggleSidebar ? 'translate-x-0' : 'translate-x-full'} bg-siteViolet backdrop-filter backdrop-blur-lg bg-opacity-40 flex justify-between items-center `}>
         <div className="flex flex-col">
           <div className='flex justify-end mb-8'>
             <div
