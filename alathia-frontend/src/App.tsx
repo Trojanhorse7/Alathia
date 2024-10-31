@@ -6,8 +6,8 @@ import Home from 'pages/Home/index';
 import RegisterPlayer from 'pages/RegisterPlayer';
 import CreateBattle from 'pages/CreateBattle';
 import JoinBattle from 'pages/JoinBattle';
-// import Battleground from 'pages/Battleground';
-// import Battle from 'pages/Battle';
+import Battleground from 'pages/Battleground';
+import Battle from 'pages/Battle';
 
 function App() {
 
@@ -20,8 +20,8 @@ function App() {
           <Route path='/register' element={<RegisterPlayer />} />
           <Route path='/create' element={<CreateBattle />} />
           <Route path='/join' element={<JoinBattle />} />
-          {/* <Route path='/battleground' element={<Battleground />} />
-          <Route path='/battle/:battleName' element={<Battle />} /> */}
+          <Route path='/battleground' element={<Battleground />} />
+          <Route path='/battle/:battleName' element={<Battle />} />
         </Routes>
       </div>
     </div>

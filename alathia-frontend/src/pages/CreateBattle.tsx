@@ -4,16 +4,15 @@ import { CustomButton, CustomInput, GameLoad, PageHOC } from '../components';
 import { toast } from 'sonner';
 
 // Blockchain Imports
-import { useContractWrite, usePrepareContractWrite, useAccount, useContractRead, useContractEvent } from 'wagmi'
+import { useContractWrite, usePrepareContractWrite, useAccount, useContractEvent } from 'wagmi'
 import { abi, contractAddress } from '../contract/index.js';
+import { useGlobalContext } from '../store';
 
 const CreateBattle = () => {
-  // const { contract, gameData } = useGlobalContext();
-  const [battleName, setBattleName] = useState('');
+  const { gameData, battleName, setBattleName } = useGlobalContext();
   const [waitBattle, setWaitBattle] = useState(false);
-
   const navigate = useNavigate();
-  const { address, isConnected } = useAccount();
+  const { isConnected } = useAccount();
 
   // Function that Require Write
   const { config } = usePrepareContractWrite({
@@ -25,23 +24,6 @@ const CreateBattle = () => {
 
   const { write, error, isLoading, isSuccess } = useContractWrite(config)
   
-  // Function that Require Read
-  const { data: isPlayer } = useContractRead({
-    address: contractAddress,
-    abi,
-    functionName: 'isPlayer',
-    args: [address],
-    watch: true,
-  })
-
-  const { data: isPlayerToken } = useContractRead({
-    address: contractAddress,
-    abi,
-    functionName: 'isPlayerToken',
-    args: [address],
-    watch: true,
-  })
-
   useContractEvent({
     address: contractAddress,
     abi,
@@ -70,11 +52,15 @@ const CreateBattle = () => {
     }
   }, [isSuccess])
 
-  const handleClick = async () => {
-    if (isPlayer && isPlayerToken) {
-      toast.info("Already Registered, Create Battle")
-      return navigate('/create')
+  useEffect(() => {
+    if (gameData?.activeBattle?.battleStatus === 1) {
+      navigate(`/battle/${gameData.activeBattle.name}`);
+    } else if (gameData?.activeBattle?.battleStatus === 0) {
+      setWaitBattle(true);
     }
+  }, [gameData]);
+
+  const handleClick = async () => {
     try {
       if (battleName !== '') {
         if (isConnected) {
@@ -92,24 +78,28 @@ const CreateBattle = () => {
 
   return (
     <>
-      {waitBattle && <GameLoad />}
-
-      <div className='mb-5 flex flex-col'>
-        <CustomInput
-          label='Battle'
-          placeHolder='Enter battle name'
-          value={battleName}
-          handleValueChange={setBattleName}
-        />
-        <CustomButton
-        title="Register"
-        handleClick={handleClick}
-        disabled={isLoading || isSuccess}
-      />
-      </div>
-      <p className='font-rajdhani font-medium text-lg text-siteViolet cursor-pointer' onClick={() => navigate('/join')}>
-        Or join already existing battles
-      </p>
+      { waitBattle 
+      
+        ? <GameLoad />
+        : <>
+            <div className='mb-5 flex flex-col'>
+              <CustomInput
+                label='Battle'
+                placeHolder='Enter battle name'
+                value={battleName}
+                handleValueChange={setBattleName}
+              />
+              <CustomButton
+              title="Register"
+              handleClick={handleClick}
+              disabled={isLoading || isSuccess}
+            />
+            </div>
+            <p className='font-rajdhani font-medium text-lg text-siteViolet cursor-pointer' onClick={() => navigate('/join')}>
+              Or join already existing battles
+            </p>
+          </>
+      }
     </>
   );
 };

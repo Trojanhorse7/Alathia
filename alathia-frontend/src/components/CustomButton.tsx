@@ -2,7 +2,7 @@
 interface CustomButtonProps {
   title: string;
   handleClick: () => void;
-  disabled: boolean
+  disabled?: boolean
 }
 
 const CustomButton: React.FC<CustomButtonProps> = ({ title, handleClick, disabled }) => (

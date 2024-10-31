@@ -2,7 +2,7 @@
 /* eslint-disable no-param-reassign */
 import { explosion } from '../assets';
 
-export const playAudio = (clip: string): Promise<void> => {
+export const playAudio = (clip: any): any => {
   const audio = new Audio();
   audio.src = clip;
 
@@ -12,7 +12,7 @@ export const playAudio = (clip: string): Promise<void> => {
 const prefixes = ['webkit', 'moz', 'ms', ''] as const;
 
 function prefixedEvent(
-  element: HTMLElement,
+  element: any,
   type: string,
   callback: EventListener
 ): void {
@@ -23,7 +23,7 @@ function prefixedEvent(
 }
 
 function transform(
-  $e: HTMLElement,
+  $e: any,
   xValue: number = 0,
   yValue: number = 0,
   scaleValue: number = 1,
@@ -37,10 +37,9 @@ function transform(
 
   $e.style.webkitTransform = transfromString;
   $e.style.transform = transfromString;
-  $e.style.transform = transfromString;
 }
 
-function createParticle(x: number, y: number, scale: number): HTMLElement {
+function createParticle(x: number, y: number, scale: number): any {
   const $particle = document.createElement('i');
   const $sparcle = document.createElement('i');
 
@@ -53,7 +52,7 @@ function createParticle(x: number, y: number, scale: number): HTMLElement {
   return $particle;
 }
 
-function explode($container: HTMLElement): void {
+function explode($container: any): any {
   const particles: HTMLElement[] = [];
 
   particles.push(createParticle(0, 0, 1));
@@ -82,14 +81,7 @@ function explode($container: HTMLElement): void {
   });
 }
 
-interface TransformValues {
-  x: number;
-  y: number;
-  scale: number;
-  r: number;
-}
-
-function explodeGroup(x: number, y: number, trans: TransformValues): HTMLElement {
+function explodeGroup(x: number, y: number, trans: any): any {
   const $container = document.createElement('div');
 
   $container.className = 'container';
@@ -102,7 +94,7 @@ function explodeGroup(x: number, y: number, trans: TransformValues): HTMLElement
   return $container;
 }
 
-export function sparcle(event: MouseEvent): void {
+export function sparcle(event: any): any {
   const explosions: HTMLElement[] = [];
 
   explosions.push(

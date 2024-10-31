@@ -6,10 +6,10 @@ import { CustomButton, CustomInput, PageHOC } from '../components';
 //Blockchain
 import { useContractWrite, usePrepareContractWrite, useAccount, useContractRead, useContractEvent } from 'wagmi'
 import { abi, contractAddress } from '../contract/index.js';
+import { useGlobalContext } from '../store';
 
 const RegisterPlayer = () => {
-  // const { contract, gameData } = useGlobalStore();
-  
+  const { gameData } = useGlobalContext();
   const [playerName, setPlayerName] = useState('');
   const navigate = useNavigate();
   const { address, isConnected } = useAccount();
@@ -18,7 +18,8 @@ const RegisterPlayer = () => {
   const { config } = usePrepareContractWrite({
     address: contractAddress,
     abi,
-    functionName: 'registerPlayer',
+    functionName: 'registerPlayer', 
+    enabled: playerName !== '',
     args: [playerName, playerName],
   })
 
@@ -45,10 +46,13 @@ const RegisterPlayer = () => {
     address: contractAddress,
     abi,
     eventName: 'NewPlayer',
-    listener(log) {
+    listener(log: any) {
+      if (address === log[0].args.owner) {
+        toast.success("Player has been successfully registered")
+      }
       console.log(log)
     },
-})
+  })
 
   // Reject Error Display
   useEffect(() => {
@@ -72,6 +76,7 @@ const RegisterPlayer = () => {
       if (playerName !== '') {
         if (isConnected) {
           write?.()
+          setPlayerName('')
         } else {
           toast.error("Account Not Connected.")
         }
@@ -83,11 +88,11 @@ const RegisterPlayer = () => {
     }
   };
 
-  // useEffect(() => {
-  //   if (gameData.activeBattle) {
-  //     navigate(`/battle/${gameData.activeBattle.name}`);
-  //   }
-  // }, [gameData]);
+  useEffect(() => {
+    if (gameData.activeBattle) {
+      navigate(`/battle/${gameData.activeBattle.name}`);
+    }
+  }, [gameData]);
 
   return (
     <div className="flex flex-col">
