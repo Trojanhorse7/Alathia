@@ -17,11 +17,20 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
   const [height, setHeight] = useState(0);
 
   useEffect(() => {
-    if (ref.current) {
-      const rect = ref.current.getBoundingClientRect();
-      setHeight(rect.height);
-    }
-  }, [ref]);
+    const updateHeight = () => {
+      if (ref.current) {
+        const rect = ref.current.getBoundingClientRect();
+        setHeight(rect.height);
+      }
+    };
+    updateHeight(); 
+    window.addEventListener('resize', updateHeight);
+    
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', updateHeight);
+    };
+  }, [ref]); 
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -33,16 +42,15 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
 
   return (
     <div
-      className="w-full bg-white dark:bg-neutral-950 font-sans md:px-10"
+      className="w-full font-sans md:px-10 h-fit"
       ref={containerRef}
     >
       <div className="max-w-7xl mx-auto py-20 px-4 md:px-8 lg:px-10">
-        <h2 className="text-lg md:text-4xl mb-4 text-black dark:text-white max-w-4xl">
-          Changelog from my journey
+        <h2 className="text-lg md:text-4xl mb-4 text-gold10 max-w-4xl">
+          ALATHIA ROADMAP
         </h2>
         <p className="text-neutral-700 dark:text-neutral-300 text-sm md:text-base max-w-sm">
-          I&apos;ve been working on Aceternity for the past 2 years. Here&apos;s
-          a timeline of my journey.
+          Explore the journey of Alathia: Battle of the Gods from concept to launch. Follow along as we bring the epic battles and divine powers of Alathia to life.
         </p>
       </div>
 

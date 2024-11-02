@@ -287,3 +287,35 @@ input:disabled {
         transform: rotate(45deg) scale(0.25) translateZ(0);
     }
 }
+
+.faq-row-wrapper .row-title {
+    background-color: #555a5c;
+}
+
+.faq-row-wrapper .row-title {
+    @apply !pl-[1rem] h-[64px] md:!text-[30px] !text-[20px] font-medium;
+}
+
+.faq-row-wrapper span.icon-wrapper {
+    position: relative !important;
+    top: 0 !important;
+}
+
+.faq-row-wrapper .row-content-text {
+    @apply !pl-[1.5rem] md:!text-[30px] !text-[20px];
+}
+
+.faq-row-wrapper .faq-row { 
+    border-bottom: none !important;
+    gap: 1rem;
+}
+
+.bluegradient {
+    @apply bg-gradient-to-b from-[#00C4FF] to-[#0088B1];
+}
+
+.curved-bottom {
+    /* Curved corners */
+    border-bottom-left-radius: 50% 40%;
+    border-bottom-right-radius: 50% 40%;
+}

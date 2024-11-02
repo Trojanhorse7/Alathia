@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import "./fonts.css";
 import './global.css';
-// import '@rainbow-me/rainbowkit/styles.css'; 
+import '@rainbow-me/rainbowkit/styles.css'; 
 import { BrowserRouter } from 'react-router-dom';
 import { NextUIProvider } from '@nextui-org/react';
 import { QueryClient, QueryClientProvider  } from '@tanstack/react-query';

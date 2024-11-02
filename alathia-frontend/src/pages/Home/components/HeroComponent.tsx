@@ -8,8 +8,8 @@ export default function HeroScroll() {
             <ContainerScroll
                 titleComponent={
                     <h1 className="inline-flex flex-col text-4xl font-semibold  dark:text-white">
-                        <Cover className=''> Unleash the Power of Alathia</Cover>
-                        <span className="text-4xl md:text-[6rem] font-bold leading-none mt-[2rem] text-gold10">
+                        <Cover className='text-[1rem] md:text-[3rem]'> Unleash the Power of Alathia</Cover>
+                        <span className="text-4xl lg:text-[4rem] font-bold leading-none mt-[2rem] text-gold10">
                             Where Gods Clash and Legends Rise
                         </span>
                     </h1>

@@ -8,7 +8,7 @@ const CTAButton = () => {
     ];
 
     return (
-        <div className='flex flex-row gap-[2rem] sm:gap-[5rem] items-center justify-center'>
+        <div className='flex flex-col md:flex-row gap-[2rem] md:gap-[3rem] items-center justify-center'>
             {buttons.map((button, index) => (
                 <button key={index} className="">
                     <Link to={button.path} className="relative px-5 py-2 font-medium text-white group">
