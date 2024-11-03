@@ -7,7 +7,8 @@ import { toast } from 'sonner';
 import { Tooltip } from 'react-tooltip';
 
 //Blockchain
-import { useContractWrite, usePrepareContractWrite, useAccount, useContractReads } from 'wagmi'
+import { useContractWrite, usePrepareContractWrite, useAccount, useContractReads, useWaitForTransaction } from 'wagmi'
+import { parseGwei } from 'viem'
 import { abi, contractAddress } from '../contract/index.js';
 import { useGlobalContext } from '../store';
 
@@ -98,12 +99,14 @@ const Battle: React.FC = () => {
   )
   
   // Prepare contract write for move made
-  const { config: attackDefendConfig, isSuccess } = usePrepareContractWrite({
+  const { config: attackDefendConfig, isSuccess, isLoading } = usePrepareContractWrite({
     address: contractAddress,
     abi,
     functionName: 'attackOrDefendChoice',
     args: [choice, battleName],
     enabled: choice !== undefined,
+    gas: 200_000n,
+    gasPrice: parseGwei('21000'),
     onError(error) {
       if (error?.message.includes("You have already made a move!")) {
         toast.error("You have already made a move!");
@@ -119,7 +122,7 @@ const Battle: React.FC = () => {
     }
   });
 
-  const { write } = useContractWrite({
+  const { data: writeData, write, isLoading: writeLoading } = useContractWrite({
     ...attackDefendConfig,
     onError(error) {
       // console.error('Contract call error:', error);
@@ -132,14 +135,28 @@ const Battle: React.FC = () => {
       }
     },
     onSettled() {
+      setMoveMade(false);
       setChoice(undefined);
     }
   });
+
+  useWaitForTransaction({
+    hash: writeData?.hash,
+    enabled: writeData !== undefined,
+    onSettled(data, error) {
+      if (data?.status === 'success' || error !== null) {
+        toast.success('Transaction Successful!');
+      } else {
+        toast.error("Transaction Failed!")
+      }
+    },
+  })
 
   const handleAttackOrDefend = (choiceNumber: number) => {
     if (isConnected) {
       if(!moveMade) {
           toast.info('Battle move is being initiated...')
+          console.log(write)
         if (write) {
           playAudio(choiceNumber === 1 ? attackSound : defenseSound);
           write();
@@ -170,9 +187,9 @@ const Battle: React.FC = () => {
                 <div className={`flex items-center justify-center my-10 flex-col`}>
                   <Card card={player2} title={player2?.playerName || 'Player 2'} cardRef={player2Ref} playerTwo />
                   <div className='flex flex-row items-center'>
-                    <ActionButton imgUrl={attack} data-tooltip-id={`Attack`} data-tooltip-content={`Attack`} handleClick={() => {setChoice(1)}} restStyles='mr-2 hover:border-yellow-400' />
+                    <ActionButton imgUrl={attack} data-tooltip-id={`Attack`} disabled={writeLoading || isLoading} data-tooltip-content={`Attack`} handleClick={() => {setChoice(1)}} restStyles='mr-2 hover:border-yellow-400' />
                     <Card card={player1} title={player1?.playerName || 'Player 1'} cardRef={player1Ref} restStyles='mt-3' />
-                    <ActionButton imgUrl={defense} data-tooltip-id={`Defense`} data-tooltip-content={`Defense`} handleClick={() => {setChoice(2)}} restStyles='ml-6 hover:border-red-600' />
+                    <ActionButton imgUrl={defense} data-tooltip-id={`Defense`} disabled={writeLoading || isLoading} data-tooltip-content={`Defense`} handleClick={() => {setChoice(2)}} restStyles='ml-6 hover:border-red-600' />
                     <Tooltip id={`Attack`} float />
                     <Tooltip id={`Defense`} float />
                   </div>
