@@ -26,12 +26,8 @@ const Battle: React.FC = () => {
 
   // Redirects if no active battle
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (gameData?.activeBattle?.battleStatus === 0) navigate('/');
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, [gameData, isConnected]);
+    if (gameData?.activeBattle?.battleStatus === 0) navigate('/');
+  }, [gameData, isConnected, player1]);
 
   useEffect(() => {
     if (gameData?.activeBattle?.players[0].toLowerCase() === address?.toLowerCase()) {

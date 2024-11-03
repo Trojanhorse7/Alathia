@@ -24,6 +24,8 @@ const CreateBattle = () => {
       if (error?.message.includes("Please Register Player First")) {
         toast.error("Please Register Player First");
         navigate('/register');
+      } else if (error?.message.includes("Battle already exists!")) {
+        toast.error("BattleName Already Exist, Use Another.");
       } else {
         toast.error('Error Occured!')
       }
