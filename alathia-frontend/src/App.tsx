@@ -8,6 +8,7 @@ import CreateBattle from 'pages/CreateBattle';
 import JoinBattle from 'pages/JoinBattle';
 import Battleground from 'pages/Battleground';
 import Battle from 'pages/Battle';
+import Profile from 'pages/Profile';
 
 function App() {
 
@@ -22,6 +23,7 @@ function App() {
           <Route path='/join' element={<JoinBattle />} />
           <Route path='/battleground' element={<Battleground />} />
           <Route path='/battle/:battleName' element={<Battle />} />
+          <Route path='/profile' element={<Profile />} />
         </Routes>
       </div>
     </div>
