@@ -1,11 +1,12 @@
 import Avatar, { genConfig } from 'react-nice-avatar'
-import {Link, useNavigate} from 'react-router-dom'
+import { Link, useNavigate} from 'react-router-dom'
 import { toast } from 'sonner';
+import Navbar from './Home/components/Navbar.js';
+import aboutPlus from "assets/aboutPlus.png"
 
 //Blockchain
 import { useAccount, useContractRead } from 'wagmi'
 import { abi, contractAddress } from '../contract/index.js';
-import Navbar from './Home/components/Navbar.js';
 import { useEffect } from 'react';
 
 const Profile = () => {
@@ -23,7 +24,6 @@ const Profile = () => {
         address: contractAddress,
         abi,
         functionName: 'getPlayer',
-        watch: true,
         enabled: address !== undefined,
         args: [address],
     })
@@ -46,6 +46,16 @@ const Profile = () => {
                 address ? (
                     <div className="flex justify-center items-center bg-siteblack p-8 ">
                         <div className="w-full max-w-md p-6 rounded-lg bg-siteDimBlack text-siteWhite shadow-2xl">
+                            <div className='relative flex items-center w-full font-medium text-[1.7rem] md:text-[3.125rem] justify-center h-[3.5rem] md:h-[5.375rem] gap-[1rem] sm:gap-[2rem] text-gold10  rounded-xl overflow-hidden'>
+                                <div className='w-[2.5rem] animate-wiggle'>
+                                    <img
+                                        className="size-full"
+                                        src={aboutPlus}
+                                        alt="plusIcon"
+                                    />
+                                </div>
+                                <h1>Profile</h1>
+                            </div>
                             {/* Profile Avatar */}
                             <div className="flex justify-center mb-6">
                                 <Avatar className="w-32 h-32" {...config} />

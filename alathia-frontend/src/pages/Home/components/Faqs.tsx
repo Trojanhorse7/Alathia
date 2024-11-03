@@ -54,7 +54,7 @@ const config = {
 const Faqs = () => {
 
     return (
-        <div id="faqs" className='!font-rajdhani relative overflow-hidden flex items-center flex-col gap-[1rem] sm:gap-[2rem] w-full py-[1rem]  bg-grey10 '>
+        <div id="faqs" className='!font-rajdhani relative overflow-hidden flex items-center flex-col gap-[1rem] sm:gap-[2rem] w-full py-[1rem] bg-grey10 '>
             <div className='relative flex items-center font-medium text-[1.7rem] md:text-[3.125rem] justify-center w-[60%] max-w-[412px] h-[3.5rem] md:h-[5.375rem] gap-[1rem] sm:gap-[2rem] text-gold10  rounded-xl overflow-hidden'>
                 <div className='w-[2.5rem] animate-wiggle'>
                     <img

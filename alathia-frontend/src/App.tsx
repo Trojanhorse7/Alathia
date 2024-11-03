@@ -9,6 +9,7 @@ import JoinBattle from 'pages/JoinBattle';
 import Battleground from 'pages/Battleground';
 import Battle from 'pages/Battle';
 import Profile from 'pages/Profile';
+import Leaderboard from 'pages/Leaderboard';
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
           <Route path='/battleground' element={<Battleground />} />
           <Route path='/battle/:battleName' element={<Battle />} />
           <Route path='/profile' element={<Profile />} />
+          <Route path='/leaderboard' element={<Leaderboard />} />
         </Routes>
       </div>
     </div>
