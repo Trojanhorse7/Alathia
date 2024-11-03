@@ -8,7 +8,6 @@ import { Tooltip } from 'react-tooltip';
 
 //Blockchain
 import { useContractWrite, usePrepareContractWrite, useAccount, useContractReads } from 'wagmi'
-import { parseGwei } from 'viem'
 import { abi, contractAddress } from '../contract/index.js';
 import { useGlobalContext } from '../store';
 
@@ -105,7 +104,6 @@ const Battle: React.FC = () => {
     functionName: 'attackOrDefendChoice',
     args: [choice, battleName],
     enabled: choice !== undefined,
-    gasPrice: parseGwei('200'),
     onError(error) {
       if (error?.message.includes("You have already made a move!")) {
         toast.error("You have already made a move!");
