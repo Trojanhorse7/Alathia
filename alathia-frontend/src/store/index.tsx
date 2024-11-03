@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { playAudio, sparcle } from 'utils/animation.js';
-import { defenseSound } from 'assets/index.js';
+import { playAudio, sparcle } from 'utils/animation.ts';
+import { defenseSound } from 'assets/index.ts';
 
 //Blockchain
 import {  useAccount, useContractRead, useContractEvent } from 'wagmi'
@@ -151,6 +151,8 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
       setUpdateGameData((prev) => prev + 1);
     },
   });
+  
+  
 
   //Listens for BattleEnded event
   useContractEvent({
