@@ -100,6 +100,7 @@ export function sparcle(event: any): any {
   explosions.push(
     explodeGroup(event.pageX, event.pageY, { scale: 1, x: -50, y: -50, r: 0 }),
   );
+  
   explosions.push(
     explodeGroup(event.pageX, event.pageY, {
       scale: 0.5,

@@ -66,12 +66,6 @@ const Battle: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    if (gameData?.activeBattle?.battleStatus === 1 && address) {
-      getPlayerInfo();
-    }
-  }, [gameData, address]);
-
   // Get Player Infos from Blockchain
   const { data } = useContractReads(
     {
@@ -95,6 +89,7 @@ const Battle: React.FC = () => {
           args: [playerAddress01],
         },
       ],
+      watch: true,
       enabled: setPlayerAddress01 !== undefined && setPlayerAddress02 !== undefined,
       onSuccess: () => {
         if (gameData?.activeBattle?.battleStatus === 1) getPlayerInfo();

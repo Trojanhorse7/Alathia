@@ -132,10 +132,8 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
     abi,
     eventName: 'RoundEnded',
     listener(log: any) {
-
-      
-      
-      console.log(log)
+      toast.info('Round ended!')
+      // console.log(log)
       const args = log[0].args;
 
       for (let i = 0; i < args.damagedPlayers.length; i += 1) {
