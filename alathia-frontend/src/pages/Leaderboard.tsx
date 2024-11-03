@@ -29,9 +29,6 @@ const Leaderboard = () => {
         }
     }, [players])
 
-
-    console.log(players)
-
     const formattedPlayers = players as any[];
 
     // Format address to show the first and last few characters

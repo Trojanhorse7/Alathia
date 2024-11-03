@@ -40,7 +40,7 @@ const JoinBattle = () => {
   const { write, isLoading } = useContractWrite({
     ...config,
     onError(error) {
-      console.error('Contract call error:', error);
+      // console.error('Contract call error:', error);
       if (error?.message.includes("User denied transaction")) {
         toast.error("User denied the transaction.");
       } else if (error.message.includes("insufficient funds")) {

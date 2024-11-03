@@ -106,6 +106,7 @@ const Battle: React.FC = () => {
     args: [choice, battleName],
     enabled: choice !== undefined,
     gas: 200_000n,
+    staleTime: 2_000,
     gasPrice: parseGwei('21000'),
     onError(error) {
       if (error?.message.includes("You have already made a move!")) {
@@ -143,8 +144,8 @@ const Battle: React.FC = () => {
   useWaitForTransaction({
     hash: writeData?.hash,
     enabled: writeData !== undefined,
-    onSettled(data, error) {
-      if (data?.status === 'success' || error !== null) {
+    onSettled(data) {
+      if (data?.status === 'success') {
         toast.success('Transaction Successful!');
       } else {
         toast.error("Transaction Failed!")
