@@ -87,11 +87,11 @@ const GameInfo = () => {
             ))}
           </div>
         </div>
-
-        <div className={`flex justify-between items-center mt-10 gap-4 w-full`}>
-          <CustomButton title="Change Battleground" handleClick={() => navigate('/battleground')} />
-          <CustomButton title="Exit Battle" handleClick={() => handleBattleExit()} />
-        </div>
+          <div className={`flex flex-col justify-between items-center mt-10 gap-4 w-full`}>
+            <CustomButton title="Change Battleground" handleClick={() => navigate('/battleground')} />
+            <CustomButton title="Exit Battle" handleClick={() => handleBattleExit()} />
+            <CustomButton title="HomePage" handleClick={() => navigate('/')} />
+          </div>
       </div>
     </>
   );

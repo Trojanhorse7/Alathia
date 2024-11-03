@@ -17,26 +17,26 @@ const GameLoad = () => {
       </div>
 
       <div className={`flex-1 flex items-center justify-center flex-col`}>
-        <h1 className={`font-rajdhani font-bold text-white sm:text-6xl text-4xl text-center`}>
+        <h1 className={`font-rajdhani font-bold text-white sm:text-5xl text-2xl text-center`}>
           Waiting for a <br /> worthy opponent...
         </h1>
-        <p className='font-rajdhani text-siteWhite text-2xl mt-5 text-center'>
+        <p className='font-rajdhani text-siteWhite text-1xl mt-5 text-center'>
           Tip: while you're waiting, choose your preferred battleground
         </p>
 
-        <div className='flex justify-evenly items-center mt-20'>
+        <div className='flex flex-col gap-[1rem] lg:flex-row justify-evenly items-center mt-20'>
           <div className={`flex items-center justify-center flex-col`}>
-            <img src={player01} className='md:w-36 w-24 md:h-36 h-24 object-contain rounded-full drop-shadow-lg' />
+            <img src={player01} className='size-10 md:size-24 object-contain rounded-full drop-shadow-lg' />
             <p className='mt-3 font-rajdhani text-white md:text-xl text-base'>
-              {address && address.slice(0, 30)}
+              {address && address.slice(0, 20)}
             </p>
           </div>
 
           <h2 className='font-rajdhani font-extrabold text-siteViolet text-7xl mx-16'>Vs</h2>
 
           <div className={`flex items-center justify-center flex-col`}>
-            <img src={player02} className='md:w-36 w-24 md:h-36 h-24 object-contain rounded-full drop-shadow-lg' />
-            <p className='mt-3 font-rajdhani text-white md:text-xl text-base'>???????</p>
+            <img src={player02} className='size-10 md:size-24 object-contain rounded-full drop-shadow-lg' />
+            <p className='mt-3 font-rajdhani text-white md:text-xl text-base'>??????????????????????</p>
           </div>
         </div>
 

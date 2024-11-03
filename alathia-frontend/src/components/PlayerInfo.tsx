@@ -5,13 +5,13 @@ const healthLevel = (points : number) => (points >= 12 ? 'bg-green-500' : points
 const marginIndexing = (index: number) => (index !== healthPoints - 1 ? 'mr-1' : 'mr-0');
 
 const PlayerInfo = ({ player, playerIcon, mt }: any) => (
-  <div className={`flex items-center justify-center ${mt ? 'mt-4' : 'mb-4'}`}>
-    <img  data-tooltip-id={`Player-${mt ? '1' : '2'}`} data-tip src={playerIcon} alt="player02" className="w-14 h-14 object-contain rounded-full" />
+  <div className={`flex items-center justify-center px-[1rem] ${mt ? 'mt-4' : 'mb-4'}`}>
+    <img  data-tooltip-id={`Player-${mt ? '1' : '2'}`} data-tip src={playerIcon} alt="player02" className="size-10 sm:size-14 object-contain rounded-full" />
 
     <div
       data-tooltip-id={`Health-${mt ? '1' : '2'}`}
       data-tooltip-content={`Health: ${player.health}`}
-      className='flex flex-row bg-white rounded-md p-2 sm:min-w-[512px] min-w-[312px] sm:min-h-[48px] min-h-[40px] bg-opacity-10 backdrop-filter backdrop-blur-lg mx-3'
+      className='flex flex-row bg-white rounded-md p-2 sm:min-w-[300px] md:min-w-[512px] min-w-[150px] sm:min-h-[48px] min-h-[40px] bg-opacity-10 backdrop-filter backdrop-blur-lg mx-3'
     >
       {[...Array(player.health).keys()].map((item, index) => (
         <div
@@ -24,7 +24,7 @@ const PlayerInfo = ({ player, playerIcon, mt }: any) => (
     <div
       data-tooltip-id={`Mana-${mt ? '1' : '2'}`}
       data-tooltip-content={`Mana: ${player.mana}`}
-      className={`flex items-center justify-center bg-white backdrop-filter backdrop-blur-lg bg-opacity-10 w-14 h-14 rounded-full text-white font-rajdhani font-extrabold text-2xl cursor-pointer`}
+      className={`flex items-center justify-center bg-white backdrop-filter backdrop-blur-lg bg-opacity-10 size-10 sm:size-14 rounded-full text-white font-rajdhani font-extrabold text-2xl cursor-pointer`}
     >
       {player.mana || 0}
     </div>

@@ -3,29 +3,31 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { CustomButton, CustomInput, PageHOC } from '../components';
 
-//Blockchain
-import { useContractWrite, usePrepareContractWrite, useAccount, useContractRead, useContractEvent } from 'wagmi'
+// Blockchain
+import { useContractWrite, usePrepareContractWrite, useAccount, useContractRead } from 'wagmi'
 import { abi, contractAddress } from '../contract/index.js';
 import { useGlobalContext } from '../store';
 
 const RegisterPlayer = () => {
+  // States
   const { gameData } = useGlobalContext();
   const [playerName, setPlayerName] = useState('');
   const navigate = useNavigate();
   const { address, isConnected } = useAccount();
 
-  // Function that Require Write
+  // Prepare write configuration for registering a player
   const { config } = usePrepareContractWrite({
     address: contractAddress,
     abi,
-    functionName: 'registerPlayer', 
+    functionName: 'registerPlayer',
     enabled: playerName !== '',
     args: [playerName, playerName],
   })
 
-  const { write, error, isLoading, isSuccess } = useContractWrite(config)
+  // Execute contract write
+  const { write, error, isLoading } = useContractWrite(config)
   
-  // Function that Require Read
+  // Read if the address is a player
   const { data: isPlayer } = useContractRead({
     address: contractAddress,
     abi,
@@ -34,6 +36,7 @@ const RegisterPlayer = () => {
     watch: true,
   })
 
+  // Read if the address has a player token
   const { data: isPlayerToken } = useContractRead({
     address: contractAddress,
     abi,
@@ -42,19 +45,7 @@ const RegisterPlayer = () => {
     watch: true,
   })
 
-  useContractEvent({
-    address: contractAddress,
-    abi,
-    eventName: 'NewPlayer',
-    listener(log: any) {
-      if (address === log[0].args.owner) {
-        toast.success("Player has been successfully registered")
-      }
-      console.log(log)
-    },
-  })
-
-  // Reject Error Display
+  // Display error messages
   useEffect(() => {
     if (error) {
       if (error?.message.includes("User denied transaction")) {
@@ -67,6 +58,7 @@ const RegisterPlayer = () => {
     }
   }, [error])
 
+  // Handle register button click
   const handleClick = async () => {
     if (isPlayer && isPlayerToken) {
       toast.info("Already Registered, Create Battle")
@@ -88,9 +80,12 @@ const RegisterPlayer = () => {
     }
   };
 
+  // Navigate to active battle if it exists
   useEffect(() => {
-    if (gameData.activeBattle) {
+    if (gameData?.activeBattle?.battleStatus === 1) {
       navigate(`/battle/${gameData.activeBattle.name}`);
+    } else {
+      navigate('/create');
     }
   }, [gameData]);
 
@@ -105,7 +100,7 @@ const RegisterPlayer = () => {
       <CustomButton
         title="Register"
         handleClick={handleClick}
-        disabled={isLoading || isSuccess}
+        loading={isLoading}
       />
     </div>
   );

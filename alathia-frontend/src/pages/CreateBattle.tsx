@@ -4,7 +4,7 @@ import { CustomButton, CustomInput, GameLoad, PageHOC } from '../components';
 import { toast } from 'sonner';
 
 // Blockchain Imports
-import { useContractWrite, usePrepareContractWrite, useAccount, useContractEvent } from 'wagmi'
+import { useContractWrite, usePrepareContractWrite, useAccount } from 'wagmi'
 import { abi, contractAddress } from '../contract/index.js';
 import { useGlobalContext } from '../store';
 
@@ -20,18 +20,18 @@ const CreateBattle = () => {
     abi,
     functionName: 'createBattle',
     args: [battleName],
+    onError(error) {
+      if (error?.message.includes("Please Register Player First")) {
+        toast.error("Please Register Player First");
+        navigate('/register');
+      } else {
+        toast.error('Error Occured!')
+      }
+      // console.log(error)
+    }
   })
 
   const { write, error, isLoading, isSuccess } = useContractWrite(config)
-  
-  useContractEvent({
-    address: contractAddress,
-    abi,
-    eventName: 'NewPlayer',
-    listener(log) {
-      console.log(log)
-    },
-})
 
   // Error Display
   useEffect(() => {
@@ -47,31 +47,41 @@ const CreateBattle = () => {
   }, [error])
 
   useEffect(() => {
+    // Set waitBattle to true if the transaction is successful
     if (isSuccess) {
       setWaitBattle(true);
     }
   }, [isSuccess])
 
   useEffect(() => {
+    // Navigate to the battle page if the battle is created and the status is 1
     if (gameData?.activeBattle?.battleStatus === 1) {
       navigate(`/battle/${gameData.activeBattle.name}`);
     } else if (gameData?.activeBattle?.battleStatus === 0) {
+      // Set waitBattle to true if the battle is created and the status is 0
       setWaitBattle(true);
     }
   }, [gameData]);
 
+  // Function to handle the button click
   const handleClick = async () => {
     try {
+      // Check if the battle name is empty
       if (battleName !== '') {
+        // Check if the account is connected
         if (isConnected) {
+          // Write the contract
           write?.()
         } else {
+          // Display an error if the account is not connected
           toast.error("Account Not Connected.")
         }
       } else {
+        // Display an error if the battle name is empty
         toast.error("Input Player Name")
       }
     } catch(error: any) {
+      // Display an error if there is an error
       toast.error(error?.message)
     }
   };
@@ -79,7 +89,6 @@ const CreateBattle = () => {
   return (
     <>
       { waitBattle 
-      
         ? <GameLoad />
         : <>
             <div className='mb-5 flex flex-col'>
@@ -90,9 +99,9 @@ const CreateBattle = () => {
                 handleValueChange={setBattleName}
               />
               <CustomButton
-              title="Register"
+              title="Create"
               handleClick={handleClick}
-              disabled={isLoading || isSuccess}
+              loading={isLoading}
             />
             </div>
             <p className='font-rajdhani font-medium text-lg text-siteViolet cursor-pointer' onClick={() => navigate('/join')}>
@@ -104,7 +113,7 @@ const CreateBattle = () => {
   );
 };
 
-export default PageHOC(
+export default PageHOC (
   CreateBattle,
   <>
     Create <br /> a new Battle

@@ -10,47 +10,58 @@ import { useGlobalContext } from '../store';
 
 const JoinBattle = () => {
   const navigate = useNavigate();
-  const { gameData, setBattleName, battleName } =  useGlobalContext();
+  const { gameData } =  useGlobalContext();
   const { address, isConnected } = useAccount();
-  const [joinBattleName, setJoinBattleName] = useState<string | undefined>('');
+  const [joinBattleName, setJoinBattleName] = useState<string | undefined>();
 
   useEffect(() => {
     if (gameData?.activeBattle?.battleStatus === 1) navigate(`/battle/${gameData.activeBattle.name}`);
   }, [gameData]);
     
-  const { config } = usePrepareContractWrite({
+   // Prepare contract write for move made
+  const { config, isLoading: configLoading } = usePrepareContractWrite({
     address: contractAddress,
     abi,
     functionName: 'joinBattle',
     args: [joinBattleName],
-    enabled: joinBattleName !== '',
-  })
+    enabled: joinBattleName !== undefined,
+    onError(error) {
+      if (error?.message.includes("You have already made a move!")) {
+        toast.error("You have already made a move!");
+      } else {
+        // toast.error('Error Occured!')
+      }
+    },
+    onSuccess () {
+      handleClick();
+    }
+  });
 
-  const { write, error, isLoading, isSuccess } = useContractWrite(config)
-
-   // Error Display
-  useEffect(() => {
-    if (error) {
+  const { write, isLoading } = useContractWrite({
+    ...config,
+    onError(error) {
+      console.error('Contract call error:', error);
       if (error?.message.includes("User denied transaction")) {
         toast.error("User denied the transaction.");
       } else if (error.message.includes("insufficient funds")) {
         toast.error("Insufficient funds to complete the transaction.");
       } else {
-        toast.error(error.message)
+        toast.error('Error Occured!')
       }
+    },
+    onSettled() {
+      setJoinBattleName(undefined);
     }
-  }, [error])
+  });
 
-  const handleClick = async (battleName: string) => {
+  const handleClick = () => {
     try {
-      if (battleName !== '') {
-        if (isConnected) {
-          write?.()
-        } else {
-          toast.error("Account Not Connected.")
+      if (isConnected) {
+        if (write) {
+          write();
         }
       } else {
-        toast.error("Input Player Name")
+        toast.error("Account Not Connected.")
       }
     } catch(error: any) {
       toast.error(error?.message)
@@ -70,11 +81,8 @@ const JoinBattle = () => {
                 <p className='font-rajdhani font-normal text-xl text-white'>
                   {index + 1}. {battle.name}
                 </p>
-                <CustomButton title='Join' disabled={isLoading || isSuccess} handleClick={
-                  () => {
-                    setJoinBattleName(battle.name)
-                    handleClick(battle.name)
-                  }} />
+                <CustomButton title='Join' loading={configLoading || isLoading} handleClick={
+                  () => {setJoinBattleName(battle.name)}} />
               </div>
             ))
         ) : (

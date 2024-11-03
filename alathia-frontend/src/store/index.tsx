@@ -45,7 +45,6 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
   const [gameData, setGameData] = useState<any>({ players: [], pendingBattles: [], activeBattle: null });
   const [battleName, setBattleName] = useState<string>('');
   const [updateGameData, setUpdateGameData] = useState<number>(0);
-
   const player1Ref = useRef<any>(null);
   const player2Ref = useRef<any>(null);
 
@@ -66,6 +65,20 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
     watch: true,
   })
 
+  // Listens for NewPlayer event
+  useContractEvent({
+    address: contractAddress,
+    abi,
+    eventName: 'NewPlayer',
+    listener(log: any) {
+      if (address === log[0].args.owner) {
+        toast.success("Player has been successfully registered.")
+        toast.success("Create a Battle Next.")
+      }
+    },
+  })
+
+  //Listens for NewBattle event
   useContractEvent({
     address: contractAddress,
     abi,
@@ -86,6 +99,7 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
     },
   });
 
+  //Listens for NewGameToken event
   useContractEvent({
     address: contractAddress,
     abi,
@@ -102,20 +116,26 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
     },
   });
 
+  //Listens for BattleMove event
   useContractEvent({
     address: contractAddress,
     abi,
     eventName: 'BattleMove',
     listener() {
-      toast.info('Battle move initiated!')
+      toast.success('Battle move initiated!')
     },
   });
 
+  //Listens for RoundEnded event
   useContractEvent({
     address: contractAddress,
     abi,
     eventName: 'RoundEnded',
     listener(log: any) {
+
+      
+      
+      console.log(log)
       const args = log[0].args;
 
       for (let i = 0; i < args.damagedPlayers.length; i += 1) {
@@ -134,6 +154,7 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
     },
   });
 
+  //Listens for BattleEnded event
   useContractEvent({
     address: contractAddress,
     abi,
@@ -143,11 +164,13 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
 
       if (address?.toLowerCase() === args.winner.toLowerCase()) {
         toast.success('You won!');
+        setUpdateGameData((prev) => prev + 1);
+        navigate('/');
       } else if (address?.toLowerCase() === args.loser.toLowerCase()) {
         toast.error('You lost!');
+        setUpdateGameData((prev) => prev + 1);
+        navigate('/');
       }
-  
-      navigate('/create');
     },
   });
 
@@ -168,6 +191,12 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
 
     fetchGameData();
   }, [allBattles, updateGameData, address]);
+
+  useEffect(() => {
+    if (!address) {
+      navigate('/');
+    }
+  }, [address])
 
   return (
     <GlobalContext.Provider

@@ -5,7 +5,6 @@ import { attack, attackSound, defense, defenseSound, player01 as player01Icon, p
 import { playAudio } from 'src/utils/animation.js';
 import { toast } from 'sonner';
 import { Tooltip } from 'react-tooltip';
-// import Navbar from 'src/pages/Home/components/Navbar';
 
 //Blockchain
 import { useContractWrite, usePrepareContractWrite, useAccount, useContractReads } from 'wagmi'
@@ -14,40 +13,41 @@ import { useGlobalContext } from '../store';
 
 const Battle: React.FC = () => {
   const {gameData, battleGround, player1Ref, player2Ref } = useGlobalContext();
-  console.log(gameData)
   const { address, isConnected } = useAccount();
   const [player2, setPlayer2] = useState<any>();
   const [player1, setPlayer1] = useState<any>();
   const [choice, setChoice] = useState<number>();
+  const [moveMade, setMoveMade] = useState<boolean>(false);
   const { battleName } = useParams<{ battleName: string }>();
+  const [playerAddress01, setPlayerAddress01] = useState<string>();
+  const [playerAddress02, setPlayerAddress02] = useState<string>();
   const navigate = useNavigate();
 
-  /**
-   * Redirects the user to the create page if the active battle is not defined within 2 seconds.
-   * This is a failsafe to prevent the user from staying on the battle page if they don't have a battle.
-   */
+  // Redirects if no active battle
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (!gameData?.activeBattle) navigate('/create');
+      if (gameData?.activeBattle?.battleStatus === 0) navigate('/');
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [gameData, navigate]);
+  }, [gameData, isConnected]);
 
+  useEffect(() => {
+    if (gameData?.activeBattle?.players[0].toLowerCase() === address?.toLowerCase()) {
+      setPlayerAddress01(gameData?.activeBattle?.players[0]);
+      setPlayerAddress02(gameData?.activeBattle?.players[1]);
+    } else {
+      setPlayerAddress01(gameData?.activeBattle?.players[1]);
+      setPlayerAddress02(gameData?.activeBattle?.players[0]);
+    }
+  }, [gameData, address]);
+
+
+  // Fetch player info
   const getPlayerInfo = async () => {
     try {
-      let player01Address: string | null = null;
-      let player02Address: string | null = null;
-
-      if (gameData.activeBattle.players[0].toLowerCase() === address?.toLowerCase()) {
-        player01Address = gameData.activeBattle.players[0];
-        player02Address = gameData.activeBattle.players[1];
-      } else {
-        player01Address = gameData.activeBattle.players[1];
-        player02Address = gameData.activeBattle.players[0];
-      }
-
-      if (data) {
+      if (data && data[0].status !== "failure") {
+        console.log(data)
         const player01 = data[0].result as any;
         const player02 = data[1].result as any;
         const p1TokenData = data[2].result as any;
@@ -62,11 +62,17 @@ const Battle: React.FC = () => {
         setPlayer2({ ...player02, att: 'X', def: 'X', health: p2H, mana: p2M });
       }
     } catch (error: any) {
-      // console.log(error)
       toast.error(error.message);
     }
   };
 
+  useEffect(() => {
+    if (gameData?.activeBattle?.battleStatus === 1 && address) {
+      getPlayerInfo();
+    }
+  }, [gameData, address]);
+
+  // Get Player Infos from Blockchain
   const { data } = useContractReads(
     {
       contracts: [
@@ -74,82 +80,104 @@ const Battle: React.FC = () => {
           abi: abi as any,
           address: contractAddress,
           functionName: 'getPlayer',
-          args: [gameData.activeBattle?.players[0]],
+          args: [playerAddress01],
         },
         {
           abi: abi as any,
           address: contractAddress,
           functionName: 'getPlayer',
-          args: [gameData.activeBattle?.players[1]],
+          args: [playerAddress02],
         },
         {
           abi: abi as any,
           address: contractAddress,
           functionName: 'getPlayerToken',
-          args: [gameData.activeBattle?.players[0]],
+          args: [playerAddress01],
         },
       ],
+      enabled: setPlayerAddress01 !== undefined && setPlayerAddress02 !== undefined,
       onSuccess: () => {
-        if (gameData.activeBattle) getPlayerInfo();
+        if (gameData?.activeBattle?.battleStatus === 1) getPlayerInfo();
       }
     },
   )
   
-  // Write hook for initiating move
+  // Prepare contract write for move made
   const { config: attackDefendConfig, isSuccess } = usePrepareContractWrite({
     address: contractAddress,
     abi,
     functionName: 'attackOrDefendChoice',
     args: [choice, battleName],
+    enabled: choice !== undefined,
+    onError(error) {
+      if (error?.message.includes("You have already made a move!")) {
+        toast.error("You have already made a move!");
+        setMoveMade(true);
+      } else if (error?.message.includes("Mana not sufficient for attacking!")) {
+        toast.error("Mana not sufficient for attacking!, Defend Instead");
+      } else {
+        toast.error('Error Occured!')
+      }
+    },
+    onSuccess () {
+      handleAttackOrDefend(choice as number);
+    }
   });
 
-  const { write, error } = useContractWrite(attackDefendConfig)
+  const { write } = useContractWrite({
+    ...attackDefendConfig,
+    onError(error) {
+      // console.error('Contract call error:', error);
+      if (error?.message.includes("User denied transaction")) {
+        toast.error("User denied the transaction.");
+      } else if (error.message.includes("insufficient funds")) {
+        toast.error("Insufficient funds to complete the transaction.");
+      } else {
+        toast.error('Error Occured!')
+      }
+    },
+    onSettled() {
+      setChoice(undefined);
+    }
+  });
 
+  const handleAttackOrDefend = (choiceNumber: number) => {
+    if (isConnected) {
+      if(!moveMade) {
+          toast.info('Battle move is being initiated...')
+        if (write) {
+          playAudio(choiceNumber === 1 ? attackSound : defenseSound);
+          write();
+        }
+      } else {
+        toast.error("You have already made a move!")
+        setMoveMade(false);
+      }
+    } else {
+      toast.error("Account Not Connected.")
+    }
+  };
+
+  // Fetch player info on battle change
   useEffect(() => {
     if (gameData.activeBattle) {
       getPlayerInfo();
     }
   }, [gameData.activeBattle, isSuccess]);
 
-  useEffect(() => {
-    if (error) {
-      if (error?.message.includes("User denied transaction")) {
-        toast.error("User denied the transaction.");
-      } else if (error.message.includes("insufficient funds")) {
-        toast.error("Insufficient funds to complete the transaction.");
-      } else {
-        toast.error(error.message)
-      }
-    }
-  }, [error])
-
-  const handleMove = (choiceNumber: number) => {
-    try {
-      if (isConnected) {
-        setChoice(choiceNumber);
-        playAudio(choiceNumber === 1 ? attackSound : defenseSound);
-        write?.();
-      } else {
-        toast.error("Account Not Connected.")
-      }
-    } catch(error: any) {
-      toast.error(error?.message)
-    }
-  };
-
   return (
     <div className='min-h-screen flex flex-col gap-[3rem] w-[100vw] text-yellow10 text-[2rem] font-bold bg-siteblack '>
       <div className={`flex justify-between items-center w-screen min-h-screen bg-cover bg-no-repeat bg-center flex-col ${battleGround}`}>
         {
-          (player1 && player2)  && (
+          (player1 && player2 )  && (
             <>
               <PlayerInfo player={player2} playerIcon={player02Icon} mt />
                 <div className={`flex items-center justify-center my-10 flex-col`}>
                   <Card card={player2} title={player2?.playerName || 'Player 2'} cardRef={player2Ref} playerTwo />
                   <div className='flex flex-row items-center'>
-                    <ActionButton imgUrl={attack} data-tooltip-id={`Attack`} data-tooltip-content={`Attack`} handleClick={() => handleMove(1)} restStyles='mr-2 hover:border-yellow-400' />
+                    <ActionButton imgUrl={attack} data-tooltip-id={`Attack`} data-tooltip-content={`Attack`} handleClick={() => {setChoice(1)}} restStyles='mr-2 hover:border-yellow-400' />
                     <Card card={player1} title={player1?.playerName || 'Player 1'} cardRef={player1Ref} restStyles='mt-3' />
-                    <ActionButton imgUrl={defense} data-tooltip-id={`Defense`} data-tooltip-content={`Defense`} handleClick={() => handleMove(2)} restStyles='ml-6 hover:border-red-600' />
+                    <ActionButton imgUrl={defense} data-tooltip-id={`Defense`} data-tooltip-content={`Defense`} handleClick={() => {setChoice(2)}} restStyles='ml-6 hover:border-red-600' />
                     <Tooltip id={`Attack`} float />
                     <Tooltip id={`Defense`} float />
                   </div>
