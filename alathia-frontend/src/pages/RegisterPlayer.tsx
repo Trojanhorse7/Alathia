@@ -84,7 +84,6 @@ const RegisterPlayer = () => {
   useEffect(() => {
     if (gameData?.activeBattle?.battleStatus === 1) {
       navigate(`/battle/${gameData.activeBattle.name}`);
-    } else {
     }
   }, [gameData]);
 
