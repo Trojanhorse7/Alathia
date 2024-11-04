@@ -289,7 +289,7 @@ input:disabled {
 }
 
 .faq-row-wrapper .row-title {
-    background-color: #555a5c;
+    @apply bg-[#555a5c] rounded-[0.5rem] sm:rounded-[1.5rem];
 }
 
 .faq-row-wrapper .row-title {
