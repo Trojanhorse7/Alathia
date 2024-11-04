@@ -13,22 +13,39 @@ const Profile = () => {
     const { address } = useAccount();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (!address) {
-            navigate('/')
-            toast.info("Please Connect Your Wallet")
-        }
-    }, [])
-
     const { data: player } = useContractRead({
         address: contractAddress,
         abi,
         functionName: 'getPlayer',
         enabled: address !== undefined,
         args: [address],
+        onError(error) {
+            if (error?.message.includes("Player doesn't exist!")) {
+                navigate('/');
+            } else {  
+                navigate('/')
+                toast.error('Error Occured!')
+            }
+        }
     })
 
-    if (!player) return <div>Loading...</div>
+    useEffect(() => {
+        if (!address) {
+            navigate('/')
+            toast.info("Please Connect Your Wallet")
+        }
+
+        if (!player) {
+            navigate('/')
+            toast.info("Player Doesn't Exist, Register First")
+        }
+    }, [address, player])
+
+    if (!player) {
+        navigate('/')
+        return
+    }
+    
     const { playerName, gamesPlayed, gamesWon, gamesLost, inBattle} = player as any
 
     function formatAddress(addres: typeof address) {
@@ -43,7 +60,7 @@ const Profile = () => {
         <div className='min-h-screen flex flex-col gap-[1rem] w-[100vw] text-yellow10 text-[1.5rem] font-bold bg-siteblack pb-[2rem] pt-[7rem]'>
             <Navbar />
             {
-                address ? (
+                (player ) ? (
                     <div className="flex justify-center items-center bg-siteblack p-8 ">
                         <div className="w-full max-w-md p-6 rounded-lg bg-siteDimBlack text-siteWhite shadow-2xl">
                             <div className='relative flex items-center w-full font-medium text-[1.7rem] md:text-[3.125rem] justify-center h-[3.5rem] md:h-[5.375rem] gap-[1rem] sm:gap-[2rem] text-gold10  rounded-xl overflow-hidden'>
@@ -107,7 +124,7 @@ const Profile = () => {
                         </div>
                     </div>
                 ) : (
-                    <div>No wallet Connected</div>
+                    <div>No Player Found, Register Player</div>
                 )
             }
         </div>
